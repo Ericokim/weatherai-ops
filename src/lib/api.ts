@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { env } from '#/env'
+import { env } from '@/env'
 
 export const geocodingApi = axios.create({
   baseURL: env.VITE_OPEN_METEO_GEOCODING_URL ?? 'https://geocoding-api.open-meteo.com/v1',

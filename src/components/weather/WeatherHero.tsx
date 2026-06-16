@@ -1,7 +1,7 @@
 import { animated, useSpring } from '@react-spring/web'
 import { CloudRain, Droplets, Sunrise, Sunset, ThermometerSun, Wind } from 'lucide-react'
-import { formatTemp, WIND_UNIT_LABEL } from '#/lib/format'
-import { describeWeather, weatherIcon } from '#/lib/weather-codes'
+import { formatTemp, WIND_UNIT_LABEL } from '@/lib/format'
+import { describeWeather, weatherIcon } from '@/lib/weather-codes'
 
 export function WeatherHero({ forecast, units }: { forecast: Forecast; units: Units }) {
   const { current, location, daily } = forecast

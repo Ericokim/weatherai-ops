@@ -8,7 +8,7 @@ import {
   Umbrella,
   Wind,
 } from 'lucide-react'
-import { Button } from '#/components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +16,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '#/components/ui/dropdown-menu'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
-import { formatTemp, formatWeekday, WIND_UNIT_LABEL } from '#/lib/format'
-import { navIconButton } from '#/lib/ui'
-import { describeWeather, weatherIcon } from '#/lib/weather-codes'
+} from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { formatTemp, formatWeekday, WIND_UNIT_LABEL } from '@/lib/format'
+import { navIconButton } from '@/lib/ui'
+import { describeWeather, weatherIcon } from '@/lib/weather-codes'
 
 function DayCard({
   day,

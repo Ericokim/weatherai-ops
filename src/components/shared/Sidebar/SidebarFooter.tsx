@@ -1,4 +1,4 @@
-import { useWeatherApp } from '#/context'
+import { useWeatherApp } from '@/context'
 
 export function SidebarFooter() {
   const { selectedLocation } = useWeatherApp()

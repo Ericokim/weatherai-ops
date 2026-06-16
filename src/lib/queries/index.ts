@@ -1,6 +1,6 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { useWeatherApp } from '#/context'
-import { searchLocations } from '#/lib/api'
+import { useWeatherApp } from '@/context'
+import { searchLocations } from '@/lib/api'
 import { queryKeys } from './queryKeys'
 import { forecastQueryOptions, geminiInsightQueryOptions } from './queryOptions'
 

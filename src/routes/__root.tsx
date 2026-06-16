@@ -11,23 +11,23 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { RefreshCw } from 'lucide-react'
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
-import { DefaultCatchBoundary } from '#/components/DefaultCatchBoundary'
-import { NotFound } from '#/components/NotFound'
-import { LoadingState } from '#/components/shared/LoadingState'
-import { AppBreadcrumbs, Navbar } from '#/components/shared/Navbar'
-import { Sidebar } from '#/components/shared/Sidebar'
-import { Button } from '#/components/ui/button'
+import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'
+import { NotFound } from '@/components/NotFound'
+import { LoadingState } from '@/components/shared/LoadingState'
+import { AppBreadcrumbs, Navbar } from '@/components/shared/Navbar'
+import { Sidebar } from '@/components/shared/Sidebar'
+import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '#/components/ui/tooltip'
-import { useWeatherApp, WeatherAppProvider } from '#/context'
-import TanStackQueryDevtools from '#/integrations/tanstack-query/devtools'
-import { queryKeys } from '#/lib/queries/queryKeys'
-import { cn } from '#/lib/utils'
-import appCss from '#/styles.css?url'
+} from '@/components/ui/tooltip'
+import { useWeatherApp, WeatherAppProvider } from '@/context'
+import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
+import { queryKeys } from '@/lib/queries/queryKeys'
+import { cn } from '@/lib/utils'
+import appCss from '@/styles.css?url'
 
 interface MyRouterContext {
   queryClient: QueryClient

@@ -1,14 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { LoadingState } from '#/components/shared/LoadingState'
-import { PageHeader } from '#/components/shared/PageHeader'
-import { RouteErrorComponent } from '#/components/shared/RouteError'
-import { Button } from '#/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
-import { storageKey, themes } from '#/constants/data'
-import { useWeatherApp } from '#/context'
-import { cn } from '#/lib/utils'
+import { LoadingState } from '@/components/shared/LoadingState'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { RouteErrorComponent } from '@/components/shared/RouteError'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { storageKey, themes } from '@/constants/data'
+import { useWeatherApp } from '@/context'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/settings')({
   component: Settings,

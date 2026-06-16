@@ -1,7 +1,7 @@
 import { Menu } from 'lucide-react'
-import { Button } from '#/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
-import { navIconButton } from '#/lib/ui'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { navIconButton } from '@/lib/ui'
 import { GlobalSearch } from './GlobalSearch'
 import { ThemeToggle } from './ThemeToggle'
 

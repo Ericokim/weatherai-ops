@@ -8,8 +8,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '#/components/ui/breadcrumb'
-import { navigation } from '#/constants/data'
+} from '@/components/ui/breadcrumb'
+import { navigation } from '@/constants/data'
 
 const navItems = navigation.flatMap((group) => group.items)
 

@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query'
-import { getWeatherInsight } from '#/lib/ai-insight'
-import { fetchForecast } from '#/lib/api'
-import { describeWeather } from '#/lib/weather-codes'
+import { getWeatherInsight } from '@/lib/ai-insight'
+import { fetchForecast } from '@/lib/api'
+import { describeWeather } from '@/lib/weather-codes'
 import { queryKeys } from './queryKeys'
 
 export function forecastQueryOptions(location: GeoLocation, units: Units) {

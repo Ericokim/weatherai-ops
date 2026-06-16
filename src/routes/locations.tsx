@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { MapPin } from 'lucide-react'
-import { LoadingState } from '#/components/shared/LoadingState'
-import { PageHeader } from '#/components/shared/PageHeader'
-import { RouteErrorComponent } from '#/components/shared/RouteError'
-import { useWeatherApp } from '#/context'
-import { cn } from '#/lib/utils'
+import { LoadingState } from '@/components/shared/LoadingState'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { RouteErrorComponent } from '@/components/shared/RouteError'
+import { useWeatherApp } from '@/context'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/locations')({
   component: Locations,

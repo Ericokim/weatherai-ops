@@ -1,5 +1,5 @@
 import { Brain, CloudRain, Sun, ThermometerSun, Wind } from 'lucide-react'
-import { formatTemp } from '#/lib/format'
+import { formatTemp } from '@/lib/format'
 
 function uvLabel(uv: number): string {
   if (uv < 3) return 'Low'

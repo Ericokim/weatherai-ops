@@ -1,10 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2, MapPin, Search } from 'lucide-react'
 import { useState } from 'react'
-import { Input } from '#/components/ui/input'
-import { useWeatherApp } from '#/context'
-import { useDebouncedValue } from '#/hooks/use-debounced-value'
-import { useLocationSearch } from '#/lib/queries'
+import { Input } from '@/components/ui/input'
+import { useWeatherApp } from '@/context'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
+import { useLocationSearch } from '@/lib/queries'
 
 function locationLabel(location: GeoLocation) {
   return [location.admin1, location.country].filter(Boolean).join(', ')

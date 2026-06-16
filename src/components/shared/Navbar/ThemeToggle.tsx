@@ -1,14 +1,14 @@
 import { Check, Monitor, Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Button } from '#/components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '#/components/ui/dropdown-menu'
-import { storageKey, themes } from '#/constants/data'
-import { navIconButton } from '#/lib/ui'
-import { cn } from '#/lib/utils'
+} from '@/components/ui/dropdown-menu'
+import { storageKey, themes } from '@/constants/data'
+import { navIconButton } from '@/lib/ui'
+import { cn } from '@/lib/utils'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeMode>('system')

@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { CloudSun } from 'lucide-react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '#/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { SidebarFooter } from './SidebarFooter'
 import { SidebarNav } from './SidebarNav'
 

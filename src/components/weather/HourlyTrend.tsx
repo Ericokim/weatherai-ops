@@ -1,7 +1,7 @@
 import { animated, type SpringValues, useSprings } from '@react-spring/web'
 import { Droplets, ShieldCheck, Wind } from 'lucide-react'
-import { formatHour, formatTemp, WIND_UNIT_LABEL } from '#/lib/format'
-import { describeWeather, weatherIcon } from '#/lib/weather-codes'
+import { formatHour, formatTemp, WIND_UNIT_LABEL } from '@/lib/format'
+import { describeWeather, weatherIcon } from '@/lib/weather-codes'
 
 export function HourlyTrend({ hours, units }: { hours: HourlyForecast[]; units: Units }) {
   const temps = hours.map((hour) => hour.temperature)
