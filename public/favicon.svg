@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="WeatherAI Ops">
+  <defs>
+    <linearGradient id="sky" x1="10" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4fb8b2" />
+      <stop offset="0.58" stop-color="#328f97" />
+      <stop offset="1" stop-color="#2f6a4a" />
+    </linearGradient>
+    <linearGradient id="cloud" x1="18" y1="23" x2="47" y2="43" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" />
+      <stop offset="1" stop-color="#dff5f1" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#sky)" />
+  <path
+    d="M22.5 42.5h22a9 9 0 0 0 .4-18 12.7 12.7 0 0 0-24.2 3.2A7.5 7.5 0 0 0 22.5 42.5Z"
+    fill="url(#cloud)"
+  />
+  <path
+    d="M47 14.5v4M47 27.5v4M40.5 23h4M49.5 23h4M42.4 18.4l2.8 2.8M48.8 24.8l2.8 2.8M51.6 18.4l-2.8 2.8M45.2 24.8l-2.8 2.8"
+    stroke="#ffffff"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    opacity="0.92"
+  />
+  <path d="M16 49h32" stroke="#b8efe5" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+</svg>
