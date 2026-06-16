@@ -7,44 +7,44 @@ import { DailyForecast } from '@/components/weather/DailyForecast'
 import { HourlyTrend } from '@/components/weather/HourlyTrend'
 import { WeatherHero } from '@/components/weather/WeatherHero'
 import { WeatherInsights } from '@/components/weather/WeatherInsights'
-import { normalizeDateRange } from '@/constants/data'
+import {
+  DEFAULT_LOCATION,
+  DEFAULT_UNITS,
+  defaultDateRange,
+  normalizeDateRange,
+} from '@/constants/data'
 import { useWeatherApp } from '@/context'
 import { useForecast, useGeminiInsight } from '@/lib/queries'
 import { forecastQueryOptions } from '@/lib/queries/queryOptions'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/')({
+  ssr: true,
   loader: async ({ context }) => {
+    // Default to Nairobi so the page is server-rendered with real data.
+    // On the client we restore the user's saved location from localStorage.
+    let location: GeoLocation = DEFAULT_LOCATION
+    let units: Units = DEFAULT_UNITS
+    let dateRange = defaultDateRange()
     try {
       const stored =
         typeof window !== 'undefined' ? localStorage.getItem('weatherai-app-state') : null
-      if (!stored) return
-      const state = JSON.parse(stored)
-      const loc = state.selectedLocation
-      const u = state.units
-      const dateRange = normalizeDateRange(state.dateRange)
-      if (!loc || !u) return
-      const location: GeoLocation = {
-        id: loc.id,
-        name: loc.name,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
-        country: loc.country,
-        countryCode: loc.countryCode,
-        admin1: loc.admin1,
-        timezone: loc.timezone,
+      if (stored) {
+        const state = JSON.parse(stored)
+        if (state.selectedLocation) location = state.selectedLocation
+        if (state.units) {
+          units = {
+            temperature: state.units.temperature || 'celsius',
+            windSpeed: state.units.windSpeed || 'kmh',
+            precipitation: state.units.precipitation || 'mm',
+          }
+        }
+        dateRange = normalizeDateRange(state.dateRange)
       }
-      const units: Units = {
-        temperature: u.temperature || 'celsius',
-        windSpeed: u.windSpeed || 'kmh',
-        precipitation: u.precipitation || 'mm',
-      }
-      await context.queryClient.ensureQueryData(
-        forecastQueryOptions(location, units, dateRange)
-      )
     } catch {
-      // loader is best-effort; component handles its own fetch
+      // fall back to defaults
     }
+    await context.queryClient.ensureQueryData(forecastQueryOptions(location, units, dateRange))
   },
   errorComponent: RouteErrorComponent,
   pendingComponent: DashboardSkeleton,

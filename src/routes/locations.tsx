@@ -7,6 +7,7 @@ import { useWeatherApp } from '@/context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/locations')({
+  ssr: true,
   component: Locations,
   errorComponent: RouteErrorComponent,
   pendingComponent: () => <LoadingState label="Loading locations…" />,
