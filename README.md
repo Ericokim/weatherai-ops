@@ -1,79 +1,41 @@
 # WeatherAI Ops
 
-WeatherAI Ops is a weather intelligence dashboard built with TanStack Start. It combines Open-Meteo forecast data with server-side Gemini analysis to show current conditions, hourly and 7-day outlooks, location search, unit preferences, and operational weather insights.
+Live demo: https://weatherai-ops-eric.netlify.app
 
-## What It Does
+WeatherAI Ops is a weather dashboard built with TanStack Start. It pulls forecast data from Open-Meteo and uses Gemini on the server to turn that data into short, readable operational notes. You can search any city, check current conditions, browse hourly and multi-day forecasts, switch units, and read a quick summary of what the day looks like.
 
-- Searches cities through the Open-Meteo geocoding API.
-- Loads current, hourly, and 7-day forecast data from Open-Meteo.
-- Shows a responsive weather dashboard with current conditions, metrics, hourly cards, 7-day forecast cards, and insight tabs.
-- Generates structured AI weather insights on the server with Gemini.
-- Keeps user preferences local, including selected location, recent locations, theme, and units.
-- Uses route-level loading and error states through TanStack Router and TanStack Query.
+## Features
 
-## Architecture & Approach
+- City search using the Open-Meteo geocoding API.
+- Current conditions plus hourly and up to 16-day forecasts from Open-Meteo.
+- A responsive dashboard with a current-conditions hero, key metrics, an hourly trend, daily cards, and an insights tab.
+- AI weather insights generated on the server with Gemini, with a rule-based fallback when no key is set.
+- A date range picker that covers past days and future forecasts.
+- Local preferences for the selected location, recent searches, units, and theme (light, dark, or system).
+- Loading and error states handled at the route level with TanStack Router and TanStack Query.
 
-The design is organized around one core principle: **a strict boundary between server state and client state.**
+## Tech stack
 
-- **Server/async state lives in TanStack Query.** Forecast, geocoding, and AI insight are all queries with stable, parameterized keys (`location + units + dateRange`). The forecast query uses `keepPreviousData`, so changing the city or date range keeps the current data on screen with an "Updating…" indicator instead of flashing the page. Route loaders `ensureQueryData` so the first paint is server-rendered, not a spinner.
-- **Client/UI state lives in one React Context** (`selectedLocation`, `recentLocations`, `units`, `theme`) — persisted to `localStorage` with SSR-safe hydration. No server responses are ever stored in Context.
-- **The AI insight is a hard server boundary.** Gemini is called from a TanStack Start server function (`createServerFn`), so `GEMINI_API_KEY` never reaches the browser. When the key is absent or the call fails, a deterministic rule-based insight is returned, so the feature degrades gracefully instead of breaking.
-- **A normalization layer** converts raw Open-Meteo payloads into typed domain models (`Forecast`, `HourlyForecast`, `DailyForecast`). UI components depend on the domain model, never on API field names — so a provider change touches one file.
-- **Single source of truth.** Navigation, constants, forecast field lists, weather-code maps, and unit labels all live in `constants/data.ts`; domain and component types are global in `type.d.ts`. KISS and DRY were enforced continuously (duplicate nav arrays, types, and dead scaffolding were removed as they appeared).
-- **Design system & accessibility.** A bespoke "lagoon" token set is layered over shadcn/ui primitives. Brand accent gradients are locked to fixed hex so they stay readable in both light and dark themes, and contrast, focus-visible rings, and `aria` labels were treated as part of "done."
+TanStack Start, TanStack Router, TanStack Query, React 19, TypeScript, Tailwind CSS, shadcn/ui, lucide-react, react-spring, axios, the Open-Meteo and Gemini APIs, Biome, and Vitest.
 
-## Problem-Solving Velocity
+## Getting started
 
-This project went from a generic scaffold to a working, polished product through tight, verifiable iterations rather than big-bang rewrites:
+Install dependencies and start the dev server:
 
-1. **Stabilize the foundation** — consolidated duplicate navigation/types, fixed a broken import that crashed the dev server, and established the `@/` alias and shared constants.
-2. **Ship a working vertical slice** — wired Open-Meteo geocoding + forecast behind TanStack Query and a Context-driven active location, so search → state → data → UI worked end to end before any polish.
-3. **Layer real product depth** — combined Overview/Forecast/Insights into a tabbed workspace, added an animated hourly trend (react-spring), a past-and-future date-range picker (Open-Meteo `start_date`/`end_date`, −92 to +16 days), and the server-side Gemini insight with a fallback.
-4. **Harden** — accessibility (WCAG contrast, dropdown date selection, aria), dark-theme color consistency, overflow fixes, and proper loading/empty/error states on every async surface.
-
-Each step closed with `tsc --noEmit` + Biome + a live smoke test, keeping the main branch always shippable. Trade-offs were made pragmatically for reliability over cleverness — native `fetch`/`axios` inside query functions, graceful AI fallback, and fixed-hex brand accents instead of theme-inverting tokens.
-
-## Tech Stack
-
-- TanStack Start
-- TanStack Router
-- TanStack Query
-- React 19
-- TypeScript
-- Tailwind CSS
-- shadcn/ui primitives
-- lucide-react icons
-- axios
-- Gemini API
-- Open-Meteo APIs
-- Biome
-- Vitest
-
-## Project Structure
-
-```txt
-src/
-  components/        Shared UI and weather dashboard components
-  constants/         App constants, forecast field lists, labels, weather code maps
-  context/           Selected location, recent locations, units, and theme state
-  integrations/      TanStack devtool integrations
-  lib/               API clients, query options, formatting, AI insight server function
-  routes/            TanStack file routes
-  styles.css         Global theme, Tailwind, and accessibility styling
-type.d.ts            Global app, weather, API response, and AI insight types
+```bash
+npm install
+npm run dev
 ```
 
-The app uses the `@/` import alias for `src`.
+The app runs at http://localhost:3000.
 
-## Environment
+## Environment variables
 
-Create `.env.local` from `.env.example`:
+Copy the example file and fill in what you need:
 
 ```bash
 cp .env.example .env.local
 ```
-
-Required and optional variables:
 
 ```env
 VITE_APP_TITLE="WeatherAI Ops"
@@ -84,68 +46,75 @@ GEMINI_API_KEY=""
 GEMINI_MODEL="gemini-1.5-flash"
 ```
 
-Notes:
+Open-Meteo does not need a key for development. Gemini is optional. If `GEMINI_API_KEY` is missing or a call fails, the app shows rule-based insights instead so nothing breaks. `GEMINI_API_KEY` is read only on the server, so keep it out of any `VITE_`-prefixed variable.
 
-- `VITE_OPEN_METEO_*` values are available to the client.
-- `GEMINI_API_KEY` must stay server-only. Do not rename it to `VITE_GEMINI_API_KEY`.
-- If `GEMINI_API_KEY` is missing or Gemini fails, the app falls back to local rule-based insights so the dashboard still works.
+## How it works
 
-## Run Locally
+The app keeps a clear line between server data and local state. TanStack Query owns everything that comes from an API (geocoding, forecast, and the Gemini insight), with query keys built from the location, units, and date range. React Context holds only local UI state, the selected location, recent searches, units, and theme, and saves it to localStorage.
 
-```bash
-npm install
-npm run dev
-```
+Gemini runs inside a TanStack Start server function, so the API key never reaches the browser. Raw Open-Meteo responses are converted into typed objects before they reach any component, so the UI never depends on raw API field names.
 
-The dev server runs on:
+A typical request looks like this:
+
+1. You search for a city.
+2. The geocoding call returns matching places.
+3. Picking one updates context and localStorage.
+4. The forecast query loads current, hourly, and daily data.
+5. A compact summary is sent to the server-side Gemini function.
+6. The UI shows the forecast plus either the Gemini insight or the local fallback.
+
+## How I built it
+
+I started from a TanStack Start scaffold and worked in small steps, getting one thing working before moving to the next. First I cleaned up the navigation and types and fixed a bad import that was crashing the dev server. Then I wired the Open-Meteo search and forecast through TanStack Query so the search-to-results flow worked end to end. After that I built the UI: the tabbed dashboard, the hourly trend, the date range picker with past and future days, and the Gemini insights with a fallback. The last pass was polish, covering accessibility, dark mode colors, layout overflow, and loading and error states. I ran the type checker, Biome, and a quick manual test after each change to keep the main branch working.
+
+## Project structure
 
 ```txt
-http://localhost:3000
+src/
+  components/   Shared UI and weather dashboard components
+  constants/    App constants, forecast fields, labels, weather code maps
+  context/      Selected location, recent locations, units, theme
+  integrations/ TanStack devtools setup
+  lib/          API clients, query options, formatters, Gemini server function
+  routes/       File-based routes
+  styles.css    Theme and global styles
+type.d.ts       Global app, weather, and API types
 ```
 
-## Build
+Imports use the `@/` alias for the `src` folder.
+
+## Scripts
 
 ```bash
-npm run build
+npm run dev      # start the dev server
+npm run build    # production build
+npm run preview  # preview the build
+npm run check    # Biome check
+npm run lint     # Biome lint
+npm run test     # Vitest
 ```
 
-Preview the production build:
+## Deployment
+
+The app is deployed on Netlify with server-side rendering: https://weatherai-ops-eric.netlify.app
+
+It uses the official TanStack Start Netlify adapter. `@netlify/vite-plugin-tanstack-start` produces a Netlify SSR function during the build, and `netlify.toml` points the publish directory at `dist/client`.
 
 ```bash
-npm run preview
+npx netlify login
+npx netlify init
+npx netlify deploy --build --prod
 ```
 
-## Quality Checks
+Set `GEMINI_API_KEY` in the Netlify site settings to enable live AI insights.
 
-```bash
-npm run check
-npm run lint
-npm run format
-npm run test
-```
+A note on Vercel: its current TanStack Start preset builds this version of the framework as static only, so server routes return 404. Netlify handles SSR out of the box. Vercel works if you switch the app to SPA mode, in which case Gemini uses the local fallback.
 
-Common full verification pass:
+## Key files
 
-```bash
-npm run check
-npx tsc --noEmit
-npm run build
-```
-
-## Data Flow
-
-1. The user searches for a city in the global search bar.
-2. `searchLocations` calls Open-Meteo geocoding.
-3. The selected location is stored in app context and local storage.
-4. `useForecast` fetches normalized current, hourly, and daily forecast data with TanStack Query.
-5. `useGeminiInsight` sends a compact weather summary to the server-only Gemini function.
-6. The UI renders forecast data and either Gemini insight output or a local fallback.
-
-## Important Files
-
-- `src/lib/api.ts`: Open-Meteo geocoding and forecast calls.
-- `src/lib/ai-insight.ts`: server-only Gemini insight generation.
-- `src/lib/queries/`: TanStack Query keys and query options.
-- `src/constants/data.ts`: shared constants, forecast fields, weather code labels, icons, and defaults.
-- `type.d.ts`: app-wide TypeScript types and API response shapes.
-- `src/routes/__root.tsx`: root shell, metadata, loading boundary, errors, devtools, and app layout.
+- `src/lib/api.ts` for the Open-Meteo geocoding and forecast calls.
+- `src/lib/ai-insight.ts` for the server-side Gemini insight and fallback.
+- `src/lib/queries/` for query keys and options.
+- `src/constants/data.ts` for shared constants and weather code maps.
+- `type.d.ts` for app-wide types.
+- `src/routes/__root.tsx` for the root layout, metadata, and error and loading boundaries.
