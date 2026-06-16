@@ -11,6 +11,28 @@ WeatherAI Ops is a weather intelligence dashboard built with TanStack Start. It 
 - Keeps user preferences local, including selected location, recent locations, theme, and units.
 - Uses route-level loading and error states through TanStack Router and TanStack Query.
 
+## Architecture & Approach
+
+The design is organized around one core principle: **a strict boundary between server state and client state.**
+
+- **Server/async state lives in TanStack Query.** Forecast, geocoding, and AI insight are all queries with stable, parameterized keys (`location + units + dateRange`). The forecast query uses `keepPreviousData`, so changing the city or date range keeps the current data on screen with an "Updating…" indicator instead of flashing the page. Route loaders `ensureQueryData` so the first paint is server-rendered, not a spinner.
+- **Client/UI state lives in one React Context** (`selectedLocation`, `recentLocations`, `units`, `theme`) — persisted to `localStorage` with SSR-safe hydration. No server responses are ever stored in Context.
+- **The AI insight is a hard server boundary.** Gemini is called from a TanStack Start server function (`createServerFn`), so `GEMINI_API_KEY` never reaches the browser. When the key is absent or the call fails, a deterministic rule-based insight is returned, so the feature degrades gracefully instead of breaking.
+- **A normalization layer** converts raw Open-Meteo payloads into typed domain models (`Forecast`, `HourlyForecast`, `DailyForecast`). UI components depend on the domain model, never on API field names — so a provider change touches one file.
+- **Single source of truth.** Navigation, constants, forecast field lists, weather-code maps, and unit labels all live in `constants/data.ts`; domain and component types are global in `type.d.ts`. KISS and DRY were enforced continuously (duplicate nav arrays, types, and dead scaffolding were removed as they appeared).
+- **Design system & accessibility.** A bespoke "lagoon" token set is layered over shadcn/ui primitives. Brand accent gradients are locked to fixed hex so they stay readable in both light and dark themes, and contrast, focus-visible rings, and `aria` labels were treated as part of "done."
+
+## Problem-Solving Velocity
+
+This project went from a generic scaffold to a working, polished product through tight, verifiable iterations rather than big-bang rewrites:
+
+1. **Stabilize the foundation** — consolidated duplicate navigation/types, fixed a broken import that crashed the dev server, and established the `@/` alias and shared constants.
+2. **Ship a working vertical slice** — wired Open-Meteo geocoding + forecast behind TanStack Query and a Context-driven active location, so search → state → data → UI worked end to end before any polish.
+3. **Layer real product depth** — combined Overview/Forecast/Insights into a tabbed workspace, added an animated hourly trend (react-spring), a past-and-future date-range picker (Open-Meteo `start_date`/`end_date`, −92 to +16 days), and the server-side Gemini insight with a fallback.
+4. **Harden** — accessibility (WCAG contrast, dropdown date selection, aria), dark-theme color consistency, overflow fixes, and proper loading/empty/error states on every async surface.
+
+Each step closed with `tsc --noEmit` + Biome + a live smoke test, keeping the main branch always shippable. Trade-offs were made pragmatically for reliability over cleverness — native `fetch`/`axios` inside query functions, graceful AI fallback, and fixed-hex brand accents instead of theme-inverting tokens.
+
 ## Tech Stack
 
 - TanStack Start
