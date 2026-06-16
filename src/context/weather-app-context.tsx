@@ -7,38 +7,14 @@ import {
   useMemo,
   useState,
 } from 'react'
-
-const STORAGE_KEY = 'weatherai-app-state'
-const MAX_RECENTS = 5
-
-// Sensible default so the dashboard renders before any search is made.
-const DEFAULT_LOCATION: GeoLocation = {
-  id: 184745,
-  name: 'Nairobi',
-  latitude: -1.28333,
-  longitude: 36.81667,
-  country: 'Kenya',
-  countryCode: 'KE',
-  admin1: 'Nairobi County',
-  timezone: 'Africa/Nairobi',
-}
-
-const DEFAULT_UNITS: Units = {
-  temperature: 'celsius',
-  windSpeed: 'kmh',
-  precipitation: 'mm',
-}
-
-interface WeatherAppState {
-  selectedLocation: GeoLocation
-  recentLocations: GeoLocation[]
-  units: Units
-}
-
-interface WeatherAppContextValue extends WeatherAppState {
-  setSelectedLocation: (location: GeoLocation) => void
-  setUnits: (units: Units) => void
-}
+import {
+  APP_STORAGE_KEY,
+  DEFAULT_LOCATION,
+  DEFAULT_UNITS,
+  defaultDateRange,
+  MAX_RECENTS,
+  normalizeDateRange,
+} from '@/constants/data'
 
 const WeatherAppContext = createContext<WeatherAppContextValue | null>(null)
 
@@ -47,16 +23,20 @@ export function WeatherAppProvider({ children }: { children: ReactNode }) {
     selectedLocation: DEFAULT_LOCATION,
     recentLocations: [],
     units: DEFAULT_UNITS,
+    dateRange: defaultDateRange(),
   })
 
   // Hydrate from storage after mount to keep SSR markup stable.
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
+    const stored = window.localStorage.getItem(APP_STORAGE_KEY)
     if (!stored) return
     try {
-      setState((prev) => ({ ...prev, ...(JSON.parse(stored) as WeatherAppState) }))
+      setState((prev) => {
+        const next = { ...prev, ...(JSON.parse(stored) as WeatherAppState) }
+        return { ...next, dateRange: normalizeDateRange(next.dateRange) }
+      })
     } catch {
-      window.localStorage.removeItem(STORAGE_KEY)
+      window.localStorage.removeItem(APP_STORAGE_KEY)
     }
   }, [])
 
@@ -64,7 +44,7 @@ export function WeatherAppProvider({ children }: { children: ReactNode }) {
   const apply = useCallback((updater: (prev: WeatherAppState) => WeatherAppState) => {
     setState((prev) => {
       const next = updater(prev)
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      window.localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(next))
       return next
     })
   }, [])
@@ -83,10 +63,15 @@ export function WeatherAppProvider({ children }: { children: ReactNode }) {
   )
 
   const setUnits = useCallback((units: Units) => apply((prev) => ({ ...prev, units })), [apply])
+  const setDateRange = useCallback(
+    (dateRange: ForecastDateRange) =>
+      apply((prev) => ({ ...prev, dateRange: normalizeDateRange(dateRange) })),
+    [apply]
+  )
 
   const value = useMemo<WeatherAppContextValue>(
-    () => ({ ...state, setSelectedLocation, setUnits }),
-    [state, setSelectedLocation, setUnits]
+    () => ({ ...state, setSelectedLocation, setUnits, setDateRange }),
+    [state, setSelectedLocation, setUnits, setDateRange]
   )
 
   return <WeatherAppContext value={value}>{children}</WeatherAppContext>

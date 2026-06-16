@@ -1,6 +1,11 @@
 import type { LucideIcon } from 'lucide-react'
+import type { QueryClient } from '@tanstack/react-query'
 
 declare global {
+  interface MyRouterContext {
+    queryClient: QueryClient
+  }
+
   type NavRoute = '/' | '/locations' | '/settings'
 
   type ThemeMode = 'light' | 'dark' | 'system'
@@ -35,6 +40,19 @@ declare global {
     onNavigate?: () => void
   }
 
+  interface WeatherAppState {
+    selectedLocation: GeoLocation
+    recentLocations: GeoLocation[]
+    units: Units
+    dateRange: ForecastDateRange
+  }
+
+  interface WeatherAppContextValue extends WeatherAppState {
+    setSelectedLocation: (location: GeoLocation) => void
+    setUnits: (units: Units) => void
+    setDateRange: (dateRange: ForecastDateRange) => void
+  }
+
   type TemperatureUnit = 'celsius' | 'fahrenheit'
   type WindSpeedUnit = 'kmh' | 'mph' | 'ms' | 'kn'
   type PrecipitationUnit = 'mm' | 'inch'
@@ -46,6 +64,11 @@ declare global {
     precipitation: PrecipitationUnit
   }
 
+  interface ForecastDateRange {
+    startDate: string
+    endDate: string
+  }
+
   /** A geocoded place returned by the Open-Meteo geocoding API. */
   interface GeoLocation {
     id: number
@@ -54,6 +77,17 @@ declare global {
     longitude: number
     country?: string
     countryCode?: string
+    admin1?: string
+    timezone?: string
+  }
+
+  interface GeocodingResult {
+    id: number
+    name: string
+    latitude: number
+    longitude: number
+    country?: string
+    country_code?: string
     admin1?: string
     timezone?: string
   }
@@ -118,6 +152,57 @@ declare global {
     current: CurrentConditions
     hourly: HourlyForecast[]
     daily: DailyForecast[]
+  }
+
+  interface ForecastResponse {
+    timezone: string
+    current: {
+      time: string
+      temperature_2m: number
+      relative_humidity_2m: number
+      apparent_temperature: number
+      is_day: number
+      precipitation: number
+      weather_code: number
+      wind_speed_10m: number
+      wind_gusts_10m: number
+      pressure_msl: number
+      cloud_cover: number
+      dew_point_2m: number
+    }
+    hourly: {
+      time: string[]
+      temperature_2m: number[]
+      apparent_temperature: number[]
+      relative_humidity_2m: number[]
+      wind_speed_10m: number[]
+      wind_gusts_10m: number[]
+      precipitation: number[]
+      precipitation_probability: number[]
+      uv_index: number[]
+      weather_code: number[]
+      pressure_msl: number[]
+      cloud_cover: number[]
+      dew_point_2m: number[]
+    }
+    daily: {
+      time: string[]
+      weather_code: number[]
+      temperature_2m_max: number[]
+      temperature_2m_min: number[]
+      temperature_2m_mean: number[]
+      apparent_temperature_max: number[]
+      apparent_temperature_min: number[]
+      precipitation_sum: number[]
+      precipitation_probability_max: number[]
+      precipitation_hours: number[]
+      uv_index_max: number[]
+      wind_speed_10m_max: number[]
+      wind_gusts_10m_max: number[]
+      sunrise: string[]
+      sunset: string[]
+      daylight_duration: number[]
+    }
   }
 
   interface AiInsight {

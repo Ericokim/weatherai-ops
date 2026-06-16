@@ -1,10 +1,9 @@
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import { HOUR } from '@/constants/data'
 import { useWeatherApp } from '@/context'
 import { searchLocations } from '@/lib/api'
 import { queryKeys } from './queryKeys'
 import { forecastQueryOptions, geminiInsightQueryOptions } from './queryOptions'
-
-const HOUR = 1000 * 60 * 60
 
 /** Geocoding search for the global search box. */
 export function useLocationSearch(query: string) {
@@ -17,10 +16,10 @@ export function useLocationSearch(query: string) {
   })
 }
 
-/** Forecast for the active location, refetched when location or units change. */
+/** Forecast for the active location, refetched when location, units, or range change. */
 export function useForecast() {
-  const { selectedLocation, units } = useWeatherApp()
-  return useSuspenseQuery(forecastQueryOptions(selectedLocation, units))
+  const { selectedLocation, units, dateRange } = useWeatherApp()
+  return useQuery(forecastQueryOptions(selectedLocation, units, dateRange))
 }
 
 /** Optional Gemini-generated operational insight for the loaded forecast. */

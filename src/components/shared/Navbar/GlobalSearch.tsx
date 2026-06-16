@@ -33,7 +33,7 @@ export function GlobalSearch() {
         event.preventDefault()
         if (results[0]) select(results[0])
       }}
-      className="group relative w-full max-w-2xl"
+      className="group relative w-full sm:max-w-xl"
     >
       <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3.5 size-4 text-(--sea-ink-soft) transition group-focus-within:text-(--lagoon-deep)" />
       <Input

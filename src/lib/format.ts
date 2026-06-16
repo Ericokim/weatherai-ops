@@ -1,3 +1,7 @@
+import { WIND_UNIT_LABEL } from '@/constants/data'
+
+export { WIND_UNIT_LABEL }
+
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
     month: 'short',
@@ -13,13 +17,6 @@ export function formatDateTime(iso: string): string {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-export const WIND_UNIT_LABEL: Record<WindSpeedUnit, string> = {
-  kmh: 'km/h',
-  mph: 'mph',
-  ms: 'm/s',
-  kn: 'kn',
 }
 
 export function formatTemp(value: number): string {

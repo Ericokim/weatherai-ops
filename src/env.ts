@@ -14,8 +14,11 @@ export const env = createEnv({
 
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
-    VITE_OPEN_METEO_BASE_URL: z.string().url().optional(),
-    VITE_OPEN_METEO_GEOCODING_URL: z.string().url().optional(),
+    VITE_OPEN_METEO_BASE_URL: z.string().url().default('https://api.open-meteo.com/v1'),
+    VITE_OPEN_METEO_GEOCODING_URL: z
+      .string()
+      .url()
+      .default('https://geocoding-api.open-meteo.com/v1'),
     VITE_OPEN_METEO_API_KEY: z.string().min(1).optional(),
   },
 

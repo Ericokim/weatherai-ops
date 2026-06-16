@@ -1,231 +1,129 @@
-Welcome to your new TanStack Start app! 
+# WeatherAI Ops
 
-# Getting Started
+WeatherAI Ops is a weather intelligence dashboard built with TanStack Start. It combines Open-Meteo forecast data with server-side Gemini analysis to show current conditions, hourly and 7-day outlooks, location search, unit preferences, and operational weather insights.
 
-To run this application:
+## What It Does
+
+- Searches cities through the Open-Meteo geocoding API.
+- Loads current, hourly, and 7-day forecast data from Open-Meteo.
+- Shows a responsive weather dashboard with current conditions, metrics, hourly cards, 7-day forecast cards, and insight tabs.
+- Generates structured AI weather insights on the server with Gemini.
+- Keeps user preferences local, including selected location, recent locations, theme, and units.
+- Uses route-level loading and error states through TanStack Router and TanStack Query.
+
+## Tech Stack
+
+- TanStack Start
+- TanStack Router
+- TanStack Query
+- React 19
+- TypeScript
+- Tailwind CSS
+- shadcn/ui primitives
+- lucide-react icons
+- axios
+- Gemini API
+- Open-Meteo APIs
+- Biome
+- Vitest
+
+## Project Structure
+
+```txt
+src/
+  components/        Shared UI and weather dashboard components
+  constants/         App constants, forecast field lists, labels, weather code maps
+  context/           Selected location, recent locations, units, and theme state
+  integrations/      TanStack devtool integrations
+  lib/               API clients, query options, formatting, AI insight server function
+  routes/            TanStack file routes
+  styles.css         Global theme, Tailwind, and accessibility styling
+type.d.ts            Global app, weather, API response, and AI insight types
+```
+
+The app uses the `@/` import alias for `src`.
+
+## Environment
+
+Create `.env.local` from `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+Required and optional variables:
+
+```env
+VITE_APP_TITLE="WeatherAI Ops"
+VITE_OPEN_METEO_BASE_URL="https://api.open-meteo.com/v1"
+VITE_OPEN_METEO_GEOCODING_URL="https://geocoding-api.open-meteo.com/v1"
+VITE_OPEN_METEO_API_KEY=""
+GEMINI_API_KEY=""
+GEMINI_MODEL="gemini-1.5-flash"
+```
+
+Notes:
+
+- `VITE_OPEN_METEO_*` values are available to the client.
+- `GEMINI_API_KEY` must stay server-only. Do not rename it to `VITE_GEMINI_API_KEY`.
+- If `GEMINI_API_KEY` is missing or Gemini fails, the app falls back to local rule-based insights so the dashboard still works.
+
+## Run Locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-# Building For Production
+The dev server runs on:
 
-To build this application for production:
+```txt
+http://localhost:3000
+```
+
+## Build
 
 ```bash
 npm run build
 ```
 
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Preview the production build:
 
 ```bash
+npm run preview
+```
+
+## Quality Checks
+
+```bash
+npm run check
+npm run lint
+npm run format
 npm run test
 ```
 
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
+Common full verification pass:
 
 ```bash
-npm run lint
-npm run format
 npm run check
+npx tsc --noEmit
+npm run build
 ```
 
+## Data Flow
 
-## Shadcn
+1. The user searches for a city in the global search bar.
+2. `searchLocations` calls Open-Meteo geocoding.
+3. The selected location is stored in app context and local storage.
+4. `useForecast` fetches normalized current, hourly, and daily forecast data with TanStack Query.
+5. `useGeminiInsight` sends a compact weather summary to the server-only Gemini function.
+6. The UI renders forecast data and either Gemini insight output or a local fallback.
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+## Important Files
 
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-## T3Env
-
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
-
-### Usage
-
-```ts
-import { env } from "#/env";
-
-console.log(env.VITE_APP_TITLE);
-```
-
-
-
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+- `src/lib/api.ts`: Open-Meteo geocoding and forecast calls.
+- `src/lib/ai-insight.ts`: server-only Gemini insight generation.
+- `src/lib/queries/`: TanStack Query keys and query options.
+- `src/constants/data.ts`: shared constants, forecast fields, weather code labels, icons, and defaults.
+- `type.d.ts`: app-wide TypeScript types and API response shapes.
+- `src/routes/__root.tsx`: root shell, metadata, loading boundary, errors, devtools, and app layout.

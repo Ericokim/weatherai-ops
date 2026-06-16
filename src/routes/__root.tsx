@@ -1,6 +1,5 @@
 import { animated, useSpring } from '@react-spring/web'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import type { QueryClient } from '@tanstack/react-query'
 import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import {
   createRootRouteWithContext,
@@ -23,17 +22,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { REFRESH_ICON_STYLE, THEME_INIT_SCRIPT } from '@/constants/data'
 import { useWeatherApp, WeatherAppProvider } from '@/context'
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools'
 import { queryKeys } from '@/lib/queries/queryKeys'
 import { cn } from '@/lib/utils'
 import appCss from '@/styles.css?url'
-
-interface MyRouterContext {
-  queryClient: QueryClient
-}
-
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('weatherai-theme');var mode=(stored==='light'||stored==='dark'||stored==='system')?stored:'system';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='system'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='system'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;document.body.style.background=resolved==='dark'?'#0a1418':'#e7f3ec'}catch(e){}})();`
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
@@ -61,12 +55,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       <NotFound />
     </RootDocument>
   ),
-  pendingComponent: RoutePending,
+  pendingComponent: LoadingState,
 })
-
-function RoutePending() {
-  return <LoadingState />
-}
 
 function RootDocument({ children }: { children?: ReactNode }) {
   useEffect(() => {
@@ -82,46 +72,7 @@ function RootDocument({ children }: { children?: ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere]">
-        <div
-          id="app-loading"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            background: '#e7f3ec',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '16px',
-            }}
-          >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                border: '3px solid rgba(50,143,151,0.25)',
-                borderTopColor: '#328f97',
-                animation: 'spin 0.7s linear infinite',
-              }}
-            />
-            <span
-              style={{
-                color: '#416166',
-                fontSize: '14px',
-                fontFamily: 'system-ui, sans-serif',
-                fontWeight: 500,
-              }}
-            >
-              Loading WeatherAI Ops…
-            </span>
-          </div>
-        </div>
+        <BootLoading />
         <AppShell>{children ?? <Outlet />}</AppShell>
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
@@ -136,27 +87,37 @@ function RootDocument({ children }: { children?: ReactNode }) {
   )
 }
 
-const refreshIconStyle = {
-  background: 'linear-gradient(150deg, var(--lagoon), var(--lagoon-deep))',
+function BootLoading() {
+  return (
+    <div
+      id="app-loading"
+      className="flex min-h-screen items-center justify-center bg-[#e7f3ec]"
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div className="size-8 rounded-full border-[3px] border-[rgba(50,143,151,0.25)] border-t-[#328f97] [animation:spin_0.7s_linear_infinite]" />
+        <span className="font-medium text-[#416166] text-sm">Loading WeatherAI Ops…</span>
+      </div>
+    </div>
+  )
 }
 
 function RefreshButton() {
   const queryClient = useQueryClient()
-  const { selectedLocation, units } = useWeatherApp()
+  const { selectedLocation, units, dateRange } = useWeatherApp()
   const fetchingForecast = useIsFetching({ queryKey: ['forecast'] })
   const fetchingInsight = useIsFetching({ queryKey: ['gemini-insight'] })
   const loading = fetchingForecast + fetchingInsight > 0
 
   const handleRefresh = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: queryKeys.forecast(selectedLocation, units),
+      queryKey: queryKeys.forecast(selectedLocation, units, dateRange),
       refetchType: 'active',
     })
     queryClient.invalidateQueries({
       queryKey: ['gemini-insight'],
       refetchType: 'active',
     })
-  }, [queryClient, selectedLocation, units])
+  }, [queryClient, selectedLocation, units, dateRange])
 
   return (
     <Tooltip>
@@ -168,7 +129,7 @@ function RefreshButton() {
           disabled={loading}
           aria-label="Refresh weather data"
           className="size-9 rounded-xl border-0 text-white shadow-[0_4px_12px_rgba(50,143,151,0.35)] transition hover:opacity-90 disabled:opacity-70"
-          style={refreshIconStyle}
+          style={REFRESH_ICON_STYLE}
         >
           <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
         </Button>

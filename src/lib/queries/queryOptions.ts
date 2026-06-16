@@ -1,23 +1,33 @@
-import { queryOptions } from '@tanstack/react-query'
+import { keepPreviousData, queryOptions } from '@tanstack/react-query'
+import { QUERY_STALE_TIME } from '@/constants/data'
 import { getWeatherInsight } from '@/lib/ai-insight'
 import { fetchForecast } from '@/lib/api'
 import { describeWeather } from '@/lib/weather-codes'
 import { queryKeys } from './queryKeys'
 
-export function forecastQueryOptions(location: GeoLocation, units: Units) {
+export function forecastQueryOptions(
+  location: GeoLocation,
+  units: Units,
+  dateRange: ForecastDateRange
+) {
   return queryOptions({
-    queryKey: queryKeys.forecast(location, units),
-    queryFn: () => fetchForecast(location, units),
-    staleTime: 1000 * 60 * 10,
+    queryKey: queryKeys.forecast(location, units, dateRange),
+    queryFn: () => fetchForecast(location, units, dateRange),
+    staleTime: QUERY_STALE_TIME,
+    // Keep the previous forecast on screen while a new range/location loads.
+    placeholderData: keepPreviousData,
   })
 }
 
-export function geminiInsightQueryOptions(forecast: Forecast, units: Units) {
+function weatherPlace(location: GeoLocation) {
+  return [location.name, location.admin1, location.country].filter(Boolean).join(', ')
+}
+
+function insightRequest(forecast: Forecast, units: Units): AiInsightRequest {
   const today = forecast.daily[0]
-  const request: AiInsightRequest = {
-    location: [forecast.location.name, forecast.location.admin1, forecast.location.country]
-      .filter(Boolean)
-      .join(', '),
+
+  return {
+    location: weatherPlace(forecast.location),
     units,
     current: {
       condition: describeWeather(forecast.current.weatherCode),
@@ -58,11 +68,13 @@ export function geminiInsightQueryOptions(forecast: Forecast, units: Units) {
       dewPoint: hour.dewPoint,
     })),
   }
+}
 
+export function geminiInsightQueryOptions(forecast: Forecast, units: Units) {
   return queryOptions({
     queryKey: queryKeys.geminiInsight(forecast, units),
-    queryFn: () => getWeatherInsight({ data: request }),
-    staleTime: 1000 * 60 * 10,
+    queryFn: () => getWeatherInsight({ data: insightRequest(forecast, units) }),
+    staleTime: QUERY_STALE_TIME,
     retry: 1,
   })
 }
