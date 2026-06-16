@@ -113,8 +113,11 @@ export const WIND_UNIT_LABEL: Record<WindSpeedUnit, string> = {
 export const NAV_ICON_BUTTON =
   'rounded-xl border-[var(--chip-line)] bg-[var(--chip-bg)] text-[var(--sea-ink)] hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]'
 
+// Fixed teal so the brand accent stays vibrant with readable white icons in both themes.
+export const BRAND_GRADIENT = 'linear-gradient(150deg, #4fb8b2, #328f97)'
+
 export const REFRESH_ICON_STYLE = {
-  background: 'linear-gradient(150deg, var(--lagoon), var(--lagoon-deep))',
+  background: BRAND_GRADIENT,
 }
 
 export const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('weatherai-theme');var mode=(stored==='light'||stored==='dark'||stored==='system')?stored:'system';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='system'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='system'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;document.body.style.background=resolved==='dark'?'#0a1418':'#e7f3ec'}catch(e){}})();`

@@ -1,9 +1,9 @@
 import { Link, useRouterState } from '@tanstack/react-router'
-import { navigation } from '@/constants/data'
+import { BRAND_GRADIENT, navigation } from '@/constants/data'
 import { cn } from '@/lib/utils'
 
 const iconGradient = {
-  background: 'linear-gradient(150deg, var(--lagoon), var(--lagoon-deep))',
+  background: BRAND_GRADIENT,
 }
 
 export function SidebarNav({ onNavigate }: SidebarNavProps) {

@@ -12,13 +12,13 @@ export function NotFound({ children }: { children?: React.ReactNode }) {
           <button
             type="button"
             onClick={() => window.history.back()}
-            className="rounded-xl bg-(--palm) px-4 py-2 font-bold text-sm text-white"
+            className="rounded-xl bg-[#2f6a4a] px-4 py-2 font-bold text-sm text-white"
           >
             Go back
           </button>
           <Link
             to="/"
-            className="rounded-xl bg-(--lagoon-deep) px-4 py-2 font-bold text-sm text-white"
+            className="rounded-xl bg-[#328f97] px-4 py-2 font-bold text-sm text-white"
           >
             Start over
           </Link>

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { CloudSun } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { BRAND_GRADIENT } from '@/constants/data'
 import { SidebarFooter } from './SidebarFooter'
 import { SidebarNav } from './SidebarNav'
 
@@ -34,9 +35,7 @@ function SidebarContent({ onNavigate }: SidebarNavProps) {
       <Link to="/" onClick={onNavigate} className="flex items-center gap-3 px-1">
         <span
           className="grid size-11 place-items-center rounded-2xl text-white shadow-[0_10px_24px_rgba(50,143,151,0.4)] ring-1 ring-white/40"
-          style={{
-            background: 'linear-gradient(150deg, var(--lagoon), var(--lagoon-deep))',
-          }}
+          style={{ background: BRAND_GRADIENT }}
         >
           <CloudSun className="size-5" />
         </span>

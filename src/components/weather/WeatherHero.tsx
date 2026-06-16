@@ -47,7 +47,7 @@ export function WeatherHero({ forecast, units }: { forecast: Forecast; units: Un
 
   return (
     <div className="island-shell relative grid min-w-0 gap-4 overflow-hidden rounded-[28px] p-4 text-card-foreground lg:grid-cols-[0.82fr_1fr_1fr]">
-      <div className="relative min-w-0 overflow-hidden rounded-3xl bg-gradient-to-br from-(--sea-ink) via-(--lagoon-deep) to-(--palm) p-5 text-white">
+      <div className="relative min-w-0 overflow-hidden rounded-3xl bg-gradient-to-br from-[#173a40] via-[#2d7e84] to-[#2f6a4a] p-5 text-white">
         <animated.div style={iconSpring}>
           <Icon className="-right-4 -bottom-5 pointer-events-none absolute size-44 text-white opacity-15" />
         </animated.div>
@@ -98,7 +98,7 @@ export function WeatherHero({ forecast, units }: { forecast: Forecast; units: Un
           <div className="relative h-2 rounded-full bg-(--sand)">
             <div className="absolute inset-y-0 left-0 w-full rounded-full bg-gradient-to-r from-(--lagoon) to-(--palm) opacity-80" />
             <span
-              className="-top-1.5 absolute size-5 rounded-full border-2 border-white bg-(--sea-ink) shadow"
+              className="-top-1.5 absolute size-5 rounded-full border-2 border-white bg-[#173a40] shadow"
               style={{ left: `calc(${Math.min(Math.max(rangePosition, 0), 100)}% - 10px)` }}
             />
           </div>
